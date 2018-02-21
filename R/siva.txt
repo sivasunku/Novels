@@ -1,0 +1,110 @@
+library(RCurl)
+library(XML)
+library(xml2)
+source("")
+file.cmakeNovel <- function(inUrl,path="C:/Users/Sunku-New/Documents/R/Novels",novelName="NewNovel"){
+  #This function prepares all the telugu content in differnt files.
+  #Input:
+  #  url of the novel you intend to download
+  #  novelName - name of the novel
+  
+  # PreRequisites
+  # Create a folder with novelname in the path C:\Users\Sunku-New\Documents\R\Novels\Data (Path#1)
+  # Post Script
+  #  Go to cmd, and combine all output files in the Path#1/novelName
+  #  download one source file of the novel
+  #  Replace tel_content div class with combined output file
+  #  Render in chrome, copy to word & make it pdf.
+  
+  # This will get all the urls of different versions (pages)
+  h1 <- htmlParse(inUrl,useInternalNodes=T)
+  l1 <- unique(xpathSApply(h1,"//div[@id='select_main']/*/option[contains(@value,'http:')]",function(u) xmlAttrs(u)["value"]))
+  i <- 0
+  
+  #For each version/page, perform the below logic.
+  for (line in l1){
+    print("processing line:")
+    print(line)
+    print("i:")
+    print(i)
+    # Get the source & tel_content variable
+    h1 <- htmlTreeParse(line,useInternalNodes=T)
+    t1 <- xpathApply(h1, "//div[@class='tel_content']")
+    
+    #Write each parsed one as one xml file.
+    for (j in t1){
+      i <- i + 1
+      outFileName=paste(path,"/Data/newNovel/newFile",formatC(i,width=6,format="d",flag=0),sep="")
+      saveXML(j,outFileName,encoding = "Binary")
+    }
+  }
+  setwd(path)
+  #Execute OS commands to copy all the files.
+  cDir <- getwd()
+  command1 <- paste(cDir,"/makeHtml.bat ",novelName,sep="")
+  shell(command1)
+}
+
+novelFromDF <- function(urls) {
+  
+  for (i in 1:nrow(urls)){
+    makeNovel(urls[i,1],urls[i,3])
+    print("Completed:")
+    print(i)
+  }
+}  
+#' makeNovel - This makes each novel into a pdf, by executing the shell commands also.
+#' There are important steps to perform, before and after to make it clean & tidy.
+#' Pre-Requisites
+#'     Ensure that there is a folder Novels in the data directory
+#' Post
+#'     The result file, open in chrome & save it as pdf. By programatically, it is not working.
+#' @author Siva Sunku
+#' @keywords make a single file
+#' 
+#' @param inUrl - url that needs to be downloaded.
+#' @param novelName - Name of the novel
+#' @param dataPath - Where the data should be written - Default - data/novel
+#' @param tempPath - Where temporary xml files are stored
+#' @param comPath - Command path, where shell scripts are present - Default 'codec'
+#' 
+#' @export
+#' 
+makeNovel <- function(inUrl,
+                      novelName = "newNovel",
+                      dataPath = ,
+                      tempPath = "data/tempDir",
+                      path="C:/Users/Sunku-New/Documents/R/Novels",
+                      novelName="NewNovel"){
+  
+  if ( !(dir.exists(tempPath)) ){
+    dir.create(tempPath)
+  }
+  
+  ## --- Parse the input url & get page urls ----------------------------------
+  h1 <- htmlParse(inUrl,useInternalNodes=T)
+  l1 <- unique(xpathSApply(h1,"//div[@id='select_main']/*/option[contains(@value,'http:')]",function(u) xmlAttrs(u)["value"]))
+  
+  ## --- Render each page into seperate file ----------------------------------
+  i <- 0
+  for (line in l1){
+    h1 <- htmlTreeParse(line,useInternalNodes=T)
+    t1 <- xpathApply(h1, "//div[@class='tel_content']")
+    
+    #Write each parsed one as one xml file.
+    for (j in t1){
+      i <- i + 1
+      outFileName=paste(tempPath,"/newFile",formatC(i,width=6,format="d",flag=0),sep="")
+      saveXML(j,outFileName,encoding = "Binary")
+    }
+  }
+  
+  
+  
+  ## --- Render each page into seperate file ----------------------------------
+  setwd(path)
+  #Execute OS commands to copy all the files.
+  cDir <- getwd()
+  command1 <- paste(cDir,"/makeHtml.bat ",novelName,sep="")
+  shell(command1)
+}
