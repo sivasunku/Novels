@@ -18,15 +18,17 @@ makeNovel <- function(inUrl,
                       novelName = "newNovel",
                       tempPath = "data/tempDir",
                       codec = "codec",
-                      resPath = "data/result"){
+                      resPath = "data/result",
+                      debugFlag = TRUE){
   
   ## --- House cleaning ----------------------------------
   if ( !(dir.exists(tempPath)) ){
     dir.create(tempPath)
   }
+  
   l <- list.files(path = tempPath,pattern = "*newFile*", full.names = TRUE)
   file.remove(l)
-  
+
   if ( !(dir.exists(resPath)) ){
     dir.create(resPath)
   }
@@ -43,6 +45,7 @@ makeNovel <- function(inUrl,
   
   ## --- Render each page into seperate file ----------------------------------
   i <- 0
+  
   for (line in l1){
     h1 <- htmlTreeParse(line,useInternalNodes=T)
     t1 <- xpathApply(h1, "//div[@class='tel_content']")
@@ -53,11 +56,13 @@ makeNovel <- function(inUrl,
       outFileName=paste(tempPath,"/newFile",formatC(i,width=6,format="d",flag=0),sep="")
       saveXML(j,outFileName,encoding = "Binary")
     }
+    if (debugFlag) {
+      print(sprintf("In makeNovel At: %s - Started Novel Page : %s of %s,",Sys.time(),outFileName,length(l1)))
+    }
   }
   
-  
-  
-  ## --- Render each page into seperate file ----------------------------------
+
+  ## --- File combining and rendering the final copy as htmlpage ----------------------------------
   l <- list.files(path = tempPath,pattern = "*newFile*", full.names = TRUE)
   file.append("tempFile",beginFile)
   file.append("tempFile",l)

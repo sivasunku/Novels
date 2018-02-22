@@ -1,0 +1,13 @@
+Package: Novels
+Type: Package
+Title: Just to render a novel.
+Version: 0.1.0
+Author: Siva Sunku <siva.sunku@gmail.com>
+Maintainer: Siva Sunku <siva.sunku@gmail.com>
+Description: Helps in making html page of many html pages
+License: GNU
+LazyData: TRUE
+Depends: 
+    XML,
+    xml2,
+    RCurl

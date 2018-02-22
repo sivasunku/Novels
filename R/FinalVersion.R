@@ -4,26 +4,26 @@ library(xml2)
 source("R/makeNovel.R")
 source("R/downloadSet.R")
 
-
+## ---- Download Completed Versions -------------------------------
 ## --- Page1 novels to be downloaded
-page1 <- "http://www.teluguone.com/grandalayam/books/novels.html"
-resultPDF <- "E:/R/Projects/pdfNovels"
+##page1 <- "http://www.teluguone.com/grandalayam/books/novels.html"
+##resultPDF <- "E:/R/Projects/pdfNovels/set1"
+##downloadSet(pageUrl = page1,resPath = resultPDF,tempStart = 30)
 
-downloadSet <- function(pageUrl,resPath = NULL){
-  h1 <- htmlTreeParse(page1,useInternalNodes=T)
-  urls  <- unique(xpathSApply(h1, "//div[@class='thumb_title']/a/@href"))
-  value <- xpathSApply(h1, "//div[@class='thumb_title']",xmlValue)
+##page2 <- "http://www.teluguone.com/grandalayam/books/novels30.html"
+##resultPDF <- "E:/R/Projects/pdfNovels/set2"
+#3downloadSet(pageUrl = page2,resPath = resultPDF)
+  
+## ---- Download In Progress       -------------------------------
+page3 <- "http://www.teluguone.com/grandalayam/books/novels60.html"
+resultPDF <- "E:/R/Projects/pdfNovels/Set3"
+downloadSet(pageUrl = page3,resPath = resultPDF)
 
-  for ( i in 6:nrow(urls) ){
-    s <- sprintf("Started Novel : %s, %s of %s : url - %s",value[i],i,nrow(urls),urls[i])
-    print(s)
-    
-    makeNovel(inUrl = urls[i],novelName = value[i],resPath = resultPDF)
-    
-    s <- sprintf("Completed Novel : %s, %s of %s : url - %s",value[i],i,nrow(urls),urls[i])
-    print(s)
-  }
-}
+## ---- TBD----------------------- -------------------------------
+page4 <- "http://www.teluguone.com/grandalayam/books/novels90.html"
+resultPDF <- "E:/R/Projects/pdfNovels/Set4"
+downloadSet(pageUrl = page4,resPath = resultPDF)
 
-
-downloadSet(page1,resPath = resultPDF)
+page5 <- "http://www.teluguone.com/grandalayam/books/novels120.html"
+resultPDF <- "E:/R/Projects/pdfNovels/Set5"
+downloadSet(pageUrl = page5,resPath = resultPDF)
